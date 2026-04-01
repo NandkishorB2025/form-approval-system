@@ -62,12 +62,19 @@ The login field supports either these usernames or full email addresses.
 
 ## 2) Configure Environment in Frontend
 
-Open `public/app.js` and update:
+Set credentials in one of these ways:
 
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
+- Edit defaults in `public/app.js`, or
+- Inject globals before `app.js` loads:
 
-(For production, inject these at build/deploy time or generate `app.js` from env variables.)
+```html
+<script>
+  window.SUPABASE_URL = "https://<project>.supabase.co";
+  window.SUPABASE_ANON_KEY = "<anon-key>";
+</script>
+```
+
+Without these values, app runs in demo mode only and cannot persist live submissions.
 
 ## 3) Run Locally
 

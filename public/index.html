@@ -10,13 +10,23 @@
   </head>
   <body>
     <main class="container">
-      <header>
-        <h1>Form Approval System</h1>
-        <p>Applicant • Scrutiny • Admin</p>
-      </header>
+      <section class="hero card">
+        <div>
+          <p class="eyebrow">Workflow Automation</p>
+          <h1>Form Approval System</h1>
+          <p class="hero-copy">
+            Enterprise-ready applicant intake with role-based scrutiny and admin analytics powered by Supabase.
+          </p>
+          <ul class="hero-points">
+            <li>Secure sign-in and role-based access controls</li>
+            <li>Live submission capture into Supabase database</li>
+            <li>Operational dashboard for approval status tracking</li>
+          </ul>
+        </div>
+      </section>
 
       <section id="auth-card" class="card">
-        <h2>Login</h2>
+        <h2>Sign in to continue</h2>
         <form id="login-form" class="form-grid">
           <label>
             Username or Email
@@ -44,13 +54,14 @@
         </div>
 
         <section id="panel-tabs" class="card tabs">
-          <button type="button" data-panel="applicant">Applicant Tab</button>
-          <button type="button" data-panel="scrutiny">Scrutiny Tab</button>
-          <button type="button" data-panel="admin">Admin Tab</button>
+          <button type="button" data-panel="applicant">Applicant</button>
+          <button type="button" data-panel="scrutiny">Scrutiny</button>
+          <button type="button" data-panel="admin">Admin</button>
         </section>
 
         <section id="applicant-panel" class="card hidden">
           <h2>Applicant Panel</h2>
+          <p class="hint">Create a new request. Records are inserted into <code>form_submissions</code> in real time.</p>
           <form id="submission-form" class="form-grid">
             <label>
               Name
@@ -71,7 +82,7 @@
 
         <section id="scrutiny-panel" class="card hidden">
           <h2>Scrutiny Panel</h2>
-          <p>Review pending submissions and approve/reject.</p>
+          <p class="hint">Review pending submissions and approve/reject.</p>
           <div id="scrutiny-list" class="list"></div>
         </section>
 

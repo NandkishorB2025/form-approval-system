@@ -1,12 +1,12 @@
-const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = window.SUPABASE_URL || 'https://YOUR_PROJECT_REF.supabase.co';
+const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
 
 const SUPABASE_CONFIGURED =
   !SUPABASE_URL.includes('YOUR_PROJECT_REF') && !SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY');
 
 if (!SUPABASE_CONFIGURED) {
   document.getElementById('status-box').textContent =
-    'Supabase is not configured. Local demo login is enabled with Applicant/Scrutiny/Admin credentials.';
+    'Supabase is not configured. Demo login works, but live database entry capture requires valid Supabase URL and ANON key.';
 }
 
 const DEMO_USERS = {
@@ -71,11 +71,7 @@ function setVisiblePanel(panelKey) {
 }
 
 async function getProfileRole(userId) {
-  const { data, error } = await client
-    .from('profiles')
-    .select('role')
-    .eq('id', userId)
-    .single();
+  const { data, error } = await client.from('profiles').select('role').eq('id', userId).single();
 
   if (error) throw error;
   return data?.role;
@@ -87,10 +83,7 @@ async function loadScrutinyList() {
     return;
   }
 
-  const { data, error } = await client
-    .from('form_submissions')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const { data, error } = await client.from('form_submissions').select('*').order('created_at', { ascending: false });
 
   if (error) {
     setStatus(`Could not load scrutiny list: ${error.message}`);
@@ -129,10 +122,7 @@ async function updateSubmissionStatus(id, status) {
     return;
   }
 
-  const { error } = await client
-    .from('form_submissions')
-    .update({ status })
-    .eq('id', id);
+  const { error } = await client.from('form_submissions').update({ status }).eq('id', id);
 
   if (error) {
     setStatus(`Unable to update status: ${error.message}`);
@@ -155,7 +145,7 @@ function renderChart(stats) {
       datasets: [
         {
           data: [stats.pending, stats.approved, stats.rejected],
-          backgroundColor: ['#d97706', '#16a34a', '#dc2626']
+          backgroundColor: ['#b45309', '#15803d', '#b91c1c']
         }
       ]
     },
@@ -177,10 +167,7 @@ async function loadAdminReport() {
     return;
   }
 
-  const { data, error } = await client
-    .from('form_submissions')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const { data, error } = await client.from('form_submissions').select('*').order('created_at', { ascending: false });
 
   if (error) {
     setStatus(`Could not load admin report: ${error.message}`);
@@ -236,6 +223,27 @@ function applySession(user) {
   setVisiblePanel(user.role);
 }
 
+function setupRealtimeSync() {
+  if (!SUPABASE_CONFIGURED) return;
+
+  client
+    .channel('form_submissions_changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'form_submissions'
+      },
+      async () => {
+        if (!currentUser) return;
+        if (currentUser.role === 'scrutiny') await loadScrutinyList();
+        if (currentUser.role === 'admin') await loadAdminReport();
+      }
+    )
+    .subscribe();
+}
+
 async function boot() {
   if (!SUPABASE_CONFIGURED) {
     const demoSession = window.sessionStorage.getItem('demoSession');
@@ -264,6 +272,9 @@ async function boot() {
   }
 
   applySession({ email: user.email, role, id: user.id });
+
+  if (role === 'scrutiny') await loadScrutinyList();
+  if (role === 'admin') await loadAdminReport();
 }
 
 ui.loginForm.addEventListener('submit', async (event) => {
@@ -344,6 +355,11 @@ ui.submissionForm.addEventListener('submit', async (event) => {
     feedback: ui.applicantFeedback.value.trim()
   };
 
+  if (!payload.name || !payload.email || !payload.feedback) {
+    ui.applicantMessage.textContent = 'All fields are required.';
+    return;
+  }
+
   if (!SUPABASE_CONFIGURED) {
     ui.submissionForm.reset();
     ui.applicantMessage.textContent = 'Demo mode: form captured locally only (Supabase not connected).';
@@ -358,7 +374,8 @@ ui.submissionForm.addEventListener('submit', async (event) => {
   }
 
   ui.submissionForm.reset();
-  ui.applicantMessage.textContent = 'Form submitted successfully.';
+  ui.applicantMessage.textContent = 'Form submitted successfully and stored in live database.';
+  setStatus('Submission captured in Supabase.');
 });
 
 ui.scrutinyList.addEventListener('click', async (event) => {
@@ -372,6 +389,7 @@ if (SUPABASE_CONFIGURED) {
   client.auth.onAuthStateChange(async () => {
     await boot();
   });
+  setupRealtimeSync();
 }
 
 boot();
