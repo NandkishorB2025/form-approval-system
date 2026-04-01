@@ -6,6 +6,12 @@ if (SUPABASE_URL.includes('YOUR_PROJECT_REF') || SUPABASE_ANON_KEY.includes('YOU
     'Update SUPABASE_URL and SUPABASE_ANON_KEY in public/app.js before using the app.';
 }
 
+const DEFAULT_LOGIN_IDENTIFIERS = {
+  username1: 'username1@example.com',
+  username2: 'username2@example.com',
+  username3: 'username3@example.com'
+};
+
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ui = {
@@ -42,6 +48,11 @@ let statusChart;
 
 function setStatus(text) {
   ui.status.textContent = text;
+}
+
+function resolveEmailIdentifier(identifier) {
+  const value = identifier.trim().toLowerCase();
+  return DEFAULT_LOGIN_IDENTIFIERS[value] ?? value;
 }
 
 function setVisiblePanel(role) {
@@ -225,7 +236,7 @@ ui.loginForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   setStatus('Signing in...');
 
-  const email = ui.loginEmail.value;
+  const email = resolveEmailIdentifier(ui.loginEmail.value);
   const password = ui.loginPassword.value;
 
   const { error } = await client.auth.signInWithPassword({ email, password });

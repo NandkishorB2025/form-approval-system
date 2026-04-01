@@ -52,6 +52,14 @@ values
 on conflict (id) do update set role = excluded.role;
 ```
 
+### Default demo credentials
+
+- `username1` / `Pass@123` (Applicant)
+- `username2` / `Pass@123` (Scrutiny)
+- `username3` / `Pass@123` (Admin)
+
+The login field supports either these usernames or full email addresses.
+
 ## 2) Configure Environment in Frontend
 
 Open `public/app.js` and update:
