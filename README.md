@@ -36,8 +36,10 @@ Create a Supabase project and run the SQL in `supabase/schema.sql`.
 This creates:
 
 - `profiles` table (maps users to roles)
-- `form_submissions` table (stores applicant data)
+- `form_submissions` table (stores applicant data; default schema included in this repo)
 - role-aware RLS policies for applicant/scrutiny/admin access
+
+> **Important:** the frontend currently writes to the `applications` table by default (`SUBMISSIONS_TABLE` in `public/app.js`) so entries are visible in Supabase Table Editor if you are using that table name in your project. If your Supabase schema uses `form_submissions`, set `SUBMISSIONS_TABLE = 'form_submissions'`.
 
 ### Create users
 
