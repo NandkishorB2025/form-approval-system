@@ -6,7 +6,7 @@ const SUPABASE_CONFIGURED =
 
 if (!SUPABASE_CONFIGURED) {
   document.getElementById('status-box').textContent =
-    'Supabase is not configured. Local demo login is enabled with Applicant/Scrutiny/Admin credentials.';
+    'Demo mode enabled. You can use Applicant, Scrutiny, and Admin tabs from the landing page.';
 }
 
 const DEMO_USERS = {
@@ -225,12 +225,17 @@ function applySession(user) {
 
   if (!user) {
     ui.authCard.classList.remove('hidden');
-    ui.appShell.classList.add('hidden');
+    ui.appShell.classList.remove('hidden');
+    ui.userEmail.textContent = 'Guest';
+    ui.userRole.textContent = 'landing';
+    ui.logoutBtn.classList.add('hidden');
+    setVisiblePanel('applicant');
     return;
   }
 
   ui.userEmail.textContent = user.email;
   ui.userRole.textContent = user.role;
+  ui.logoutBtn.classList.remove('hidden');
   ui.authCard.classList.add('hidden');
   ui.appShell.classList.remove('hidden');
   setVisiblePanel(user.role);
@@ -321,7 +326,7 @@ ui.logoutBtn.addEventListener('click', async () => {
 
 ui.panelTabs.addEventListener('click', async (event) => {
   const button = event.target.closest('button[data-panel]');
-  if (!button || !currentUser) return;
+  if (!button) return;
 
   const panel = button.dataset.panel;
   setVisiblePanel(panel);
@@ -346,7 +351,7 @@ ui.submissionForm.addEventListener('submit', async (event) => {
 
   if (!SUPABASE_CONFIGURED) {
     ui.submissionForm.reset();
-    ui.applicantMessage.textContent = 'Demo mode: form captured locally only (Supabase not connected).';
+    ui.applicantMessage.textContent = 'Demo mode: form entry captured locally.';
     return;
   }
 
