@@ -1,5 +1,6 @@
 const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
 const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUBMISSIONS_TABLE = 'applications';
 
 const SUPABASE_CONFIGURED =
   !SUPABASE_URL.includes('YOUR_PROJECT_REF') && !SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY');
@@ -88,12 +89,12 @@ async function loadScrutinyList() {
   }
 
   const { data, error } = await client
-    .from('form_submissions')
+    .from(SUBMISSIONS_TABLE)
     .select('*')
     .order('created_at', { ascending: false });
 
   if (error) {
-    setStatus(`Could not load scrutiny list: ${error.message}`);
+    setStatus(`Could not load scrutiny list from "${SUBMISSIONS_TABLE}": ${error.message}`);
     return;
   }
 
@@ -130,12 +131,12 @@ async function updateSubmissionStatus(id, status) {
   }
 
   const { error } = await client
-    .from('form_submissions')
+    .from(SUBMISSIONS_TABLE)
     .update({ status })
     .eq('id', id);
 
   if (error) {
-    setStatus(`Unable to update status: ${error.message}`);
+    setStatus(`Unable to update status in "${SUBMISSIONS_TABLE}": ${error.message}`);
     return;
   }
 
@@ -178,12 +179,12 @@ async function loadAdminReport() {
   }
 
   const { data, error } = await client
-    .from('form_submissions')
+    .from(SUBMISSIONS_TABLE)
     .select('*')
     .order('created_at', { ascending: false });
 
   if (error) {
-    setStatus(`Could not load admin report: ${error.message}`);
+    setStatus(`Could not load admin report from "${SUBMISSIONS_TABLE}": ${error.message}`);
     return;
   }
 
@@ -355,10 +356,10 @@ ui.submissionForm.addEventListener('submit', async (event) => {
     return;
   }
 
-  const { error } = await client.from('form_submissions').insert(payload);
+  const { error } = await client.from(SUBMISSIONS_TABLE).insert(payload);
 
   if (error) {
-    ui.applicantMessage.textContent = `Submission failed: ${error.message}`;
+    ui.applicantMessage.textContent = `Submission failed for "${SUBMISSIONS_TABLE}": ${error.message}`;
     return;
   }
 
