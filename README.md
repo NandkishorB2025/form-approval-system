@@ -40,7 +40,14 @@ This creates:
 - optional `applications` table support (the frontend default points to `applications` for compatibility with existing setups)
 - role-aware RLS policies for applicant/scrutiny/admin access
 
-The frontend default table is `applications` (`SUBMISSIONS_TABLE` in `public/app.js`). If you ran `supabase/schema.sql` as-is, set this value back to `form_submissions`.
+The frontend default table is `applications` (`SUBMISSIONS_TABLE` in `public/app.js`). The provided `supabase/schema.sql` now auto-creates both `form_submissions` and `applications` with matching columns/RLS, so the default frontend works without extra edits.
+
+If you already created an `applications` table manually with wrong column types (for example `applicant_username` as `int2`), run this before re-running `supabase/schema.sql`:
+
+```sql
+drop table if exists public.applications cascade;
+```
+
 
 ### Create users
 
