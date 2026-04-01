@@ -196,3 +196,19 @@ button.bad {
   margin-top: 0.5rem;
   color: var(--muted);
 }
+
+.tabs {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.tabs button {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.tabs button.active {
+  background: var(--primary);
+  color: #fff;
+}
