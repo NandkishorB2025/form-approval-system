@@ -39,7 +39,7 @@ This creates:
 - `form_submissions` table (stores applicant data; default schema included in this repo)
 - role-aware RLS policies for applicant/scrutiny/admin access
 
-> **Important:** the frontend currently writes to the `applications` table by default (`SUBMISSIONS_TABLE` in `public/app.js`) so entries are visible in Supabase Table Editor if you are using that table name in your project. If your Supabase schema uses `form_submissions`, set `SUBMISSIONS_TABLE = 'form_submissions'`.
+The frontend default table is `form_submissions` (`SUBMISSIONS_TABLE` in `public/app.js`).
 
 ### Create users
 
@@ -56,11 +56,11 @@ on conflict (id) do update set role = excluded.role;
 
 ### Default demo credentials
 
-- `username1` / `Pass@123` (Applicant)
-- `username2` / `Pass@123` (Scrutiny)
-- `username3` / `Pass@123` (Admin)
+- `Nandkishor2026` / `Pass@123` (Applicant)
+- `Scrutiny2026` / `Pass@123` (Scrutiny)
+- `Admin2026` (or `forAdmin2026`) / `Pass@123` (Admin)
 
-The login field supports either these usernames or full email addresses.
+In demo mode, these usernames work directly. In Supabase mode, login is email/password by default; map custom usernames to emails in `USERNAME_EMAIL_MAP` in `public/app.js` if needed.
 
 ## 2) Configure Environment in Frontend
 
