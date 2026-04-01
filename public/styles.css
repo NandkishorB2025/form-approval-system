@@ -1,198 +1,377 @@
+/* ═══════════════════════════════════════════════
+   Windows 2000 / Microsoft 2000 Classic Theme
+   ═══════════════════════════════════════════════ */
+
 :root {
-  --bg: #f6f8fb;
-  --card: #ffffff;
-  --text: #1f2a37;
-  --muted: #6b7280;
-  --primary: #2563eb;
-  --primary-dark: #1e40af;
-  --ok: #16a34a;
-  --bad: #dc2626;
-  --pending: #d97706;
-  --border: #e5e7eb;
+  --win-desktop:   #008080;   /* classic teal desktop */
+  --win-bg:        #d4d0c8;   /* system grey */
+  --win-titlebar:  #0a246a;   /* deep navy title bar */
+  --win-titletext: #ffffff;
+  --win-border-lt: #ffffff;   /* light edge of bevel */
+  --win-border-dk: #808080;   /* dark edge of bevel */
+  --win-border-dk2:#404040;
+  --win-text:      #000000;
+  --win-input-bg:  #ffffff;
+  --win-btn-face:  #d4d0c8;
+  --win-ok:        #008000;
+  --win-bad:       #800000;
+  --win-pending:   #804000;
+  --win-link:      #0000ff;
+  --win-select:    #0a246a;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  margin: 0;
-  font-family: Inter, Arial, sans-serif;
-  color: var(--text);
-  background: var(--bg);
+  font-family: "Tahoma", "MS Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: var(--win-text);
+  background: var(--win-desktop);
+  min-height: 100vh;
+  padding: 12px;
 }
 
+/* ── Outer container (simulates a desktop window) ── */
 .container {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 0 1rem 2rem;
+  max-width: 860px;
+  margin: 0 auto;
 }
 
-header {
-  margin-bottom: 1rem;
-}
-
-h1,
-h2,
-h3,
-p {
-  margin-top: 0;
-}
-
+/* ── Window chrome ── */
 .card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.06);
+  background: var(--win-bg);
+  margin-bottom: 8px;
+  /* outset bevel */
+  border-top:    2px solid var(--win-border-lt);
+  border-left:   2px solid var(--win-border-lt);
+  border-bottom: 2px solid var(--win-border-dk2);
+  border-right:  2px solid var(--win-border-dk2);
+  /* inner bevel */
+  outline: 1px solid var(--win-border-dk);
 }
 
-.toolbar {
+/* ── Page title / caption bar ── */
+header {
+  background: linear-gradient(to right, var(--win-titlebar) 0%, #1082d1 100%);
+  padding: 3px 6px 4px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  /* window title bar bevel */
+  border-top:    2px solid var(--win-border-lt);
+  border-left:   2px solid var(--win-border-lt);
+  border-bottom: 2px solid var(--win-border-dk2);
+  border-right:  2px solid var(--win-border-dk2);
+  outline: 1px solid var(--win-border-dk);
 }
 
+header h1 {
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--win-titletext);
+  letter-spacing: 0.5px;
+}
+
+header p {
+  font-size: 10px;
+  color: rgba(255,255,255,0.8);
+}
+
+/* ── Section title bars inside cards ── */
+.win-titlebar {
+  background: linear-gradient(to right, var(--win-titlebar) 0%, #1082d1 100%);
+  color: var(--win-titletext);
+  font-weight: bold;
+  font-size: 11px;
+  padding: 3px 6px 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: -2px -2px 8px -2px; /* bleed to card edges */
+  /* recessed inner border */
+  border-bottom: 2px solid var(--win-border-dk2);
+}
+
+.win-titlebar-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h2 {
+  font-size: 11px;
+  font-weight: bold;
+}
+
+h3 { font-size: 11px; font-weight: bold; }
+
+p { font-size: 11px; }
+
+/* ── Card inner padding ── */
+.card-body {
+  padding: 10px 12px 12px;
+}
+
+/* ── Form ── */
 .form-grid {
   display: grid;
-  gap: 0.8rem;
+  gap: 8px;
 }
 
 label {
   display: grid;
-  gap: 0.35rem;
-  font-weight: 600;
+  gap: 2px;
+  font-weight: bold;
+  font-size: 11px;
 }
 
-input,
-textarea,
+input, textarea {
+  font: 11px "Tahoma", Arial, sans-serif;
+  background: var(--win-input-bg);
+  color: var(--win-text);
+  /* inset bevel */
+  border-top:    2px solid var(--win-border-dk2);
+  border-left:   2px solid var(--win-border-dk2);
+  border-bottom: 2px solid var(--win-border-lt);
+  border-right:  2px solid var(--win-border-lt);
+  outline: 1px solid var(--win-border-dk);
+  padding: 3px 4px;
+  border-radius: 0;
+}
+
+input:focus, textarea:focus {
+  outline: 1px dotted var(--win-text);
+  outline-offset: -3px;
+}
+
+/* ── Buttons ── */
 button {
-  font: inherit;
-}
-
-input,
-textarea {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 0.65rem;
-}
-
-button {
+  font: 11px "Tahoma", Arial, sans-serif;
   cursor: pointer;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 0.65rem 0.9rem;
-  font-weight: 600;
+  background: var(--win-btn-face);
+  color: var(--win-text);
+  /* outset bevel */
+  border-top:    2px solid var(--win-border-lt);
+  border-left:   2px solid var(--win-border-lt);
+  border-bottom: 2px solid var(--win-border-dk2);
+  border-right:  2px solid var(--win-border-dk2);
+  outline: 1px solid var(--win-border-dk);
+  padding: 3px 16px 4px;
+  border-radius: 0;
+  min-width: 75px;
 }
 
 button:hover {
-  background: var(--primary-dark);
+  background: #e8e4dc;
+}
+
+button:active {
+  /* inset on press */
+  border-top:    2px solid var(--win-border-dk2);
+  border-left:   2px solid var(--win-border-dk2);
+  border-bottom: 2px solid var(--win-border-lt);
+  border-right:  2px solid var(--win-border-lt);
+  padding: 4px 15px 3px 17px;
+}
+
+/* primary = default button (darker outline) */
+button[type="submit"] {
+  border-top:    2px solid var(--win-border-lt);
+  border-left:   2px solid var(--win-border-lt);
+  border-bottom: 2px solid var(--win-border-dk2);
+  border-right:  2px solid var(--win-border-dk2);
+  outline: 2px solid var(--win-text);
+  outline-offset: 2px;
 }
 
 button.secondary {
-  background: #111827;
+  background: var(--win-btn-face);
 }
 
-.hint,
-.status {
-  color: var(--muted);
+button.ok {
+  color: var(--win-ok);
+  font-weight: bold;
 }
 
+button.bad {
+  color: var(--win-bad);
+  font-weight: bold;
+}
+
+/* ── Toolbar strip ── */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: var(--win-bg);
+  /* inset groove */
+  border-top:    1px solid var(--win-border-dk);
+  border-left:   1px solid var(--win-border-dk);
+  border-bottom: 1px solid var(--win-border-lt);
+  border-right:  1px solid var(--win-border-lt);
+  margin-bottom: 8px;
+}
+
+/* ── Badge / role pill ── */
 .badge {
-  margin-left: 0.4rem;
   display: inline-block;
-  font-size: 0.75rem;
+  font-size: 10px;
   text-transform: uppercase;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0.1rem 0.55rem;
+  letter-spacing: 0.5px;
+  background: var(--win-select);
+  color: #fff;
+  padding: 1px 5px;
+  margin-left: 6px;
+  border-top:    1px solid var(--win-border-dk2);
+  border-left:   1px solid var(--win-border-dk2);
+  border-bottom: 1px solid var(--win-border-lt);
+  border-right:  1px solid var(--win-border-lt);
 }
 
-.hidden {
-  display: none;
+/* ── Status bar at bottom ── */
+.status {
+  font-size: 11px;
+  padding: 2px 6px;
+  background: var(--win-bg);
+  border-top:    2px solid var(--win-border-dk2);
+  border-left:   2px solid var(--win-border-dk2);
+  border-bottom: 2px solid var(--win-border-lt);
+  border-right:  2px solid var(--win-border-lt);
+  outline: 1px solid var(--win-border-dk);
+  min-height: 20px;
+  margin-top: 4px;
+  color: #000;
 }
 
+/* ── Tags ── */
+.tag {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 1px 5px;
+  font-weight: bold;
+}
+
+.tag.pending  { color: var(--win-pending); }
+.tag.approved { color: var(--win-ok); }
+.tag.rejected { color: var(--win-bad); }
+
+/* ── List / items ── */
 .list {
   display: grid;
-  gap: 0.7rem;
+  gap: 6px;
 }
 
 .item {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 0.75rem;
+  background: var(--win-bg);
+  padding: 6px 8px;
+  /* inset bevel */
+  border-top:    1px solid var(--win-border-dk);
+  border-left:   1px solid var(--win-border-dk);
+  border-bottom: 1px solid var(--win-border-lt);
+  border-right:  1px solid var(--win-border-lt);
 }
 
 .row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
+  gap: 6px;
 }
 
 .actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 4px;
+  margin-top: 4px;
 }
 
-button.ok {
-  background: var(--ok);
-}
-
-button.bad {
-  background: var(--bad);
-}
-
-.tag {
-  padding: 0.1rem 0.45rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-}
-
-.tag.pending {
-  background: #fff7ed;
-  color: var(--pending);
-}
-
-.tag.approved {
-  background: #ecfdf5;
-  color: var(--ok);
-}
-
-.tag.rejected {
-  background: #fef2f2;
-  color: var(--bad);
-}
-
+/* ── Stats grid ── */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.7rem;
-  margin-bottom: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
 .stat {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 0.6rem;
-  background: #fafafa;
+  background: var(--win-bg);
+  padding: 6px 8px;
+  text-align: center;
+  /* inset */
+  border-top:    2px solid var(--win-border-dk2);
+  border-left:   2px solid var(--win-border-dk2);
+  border-bottom: 2px solid var(--win-border-lt);
+  border-right:  2px solid var(--win-border-lt);
+  outline: 1px solid var(--win-border-dk);
 }
 
 .stat span {
-  color: var(--muted);
+  font-size: 10px;
   display: block;
-  font-size: 0.82rem;
+  color: #444;
 }
 
 .stat strong {
-  font-size: 1.3rem;
+  font-size: 20px;
+  font-weight: bold;
+  display: block;
 }
 
+/* ── Hint text ── */
+.hint {
+  font-size: 10px;
+  color: #444;
+  margin-top: 6px;
+}
+
+.hint code {
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  background: #fff;
+  padding: 0 2px;
+  border: 1px solid var(--win-border-dk);
+}
+
+/* ── Message ── */
 .message {
-  margin-top: 0.5rem;
-  color: var(--muted);
+  margin-top: 6px;
+  font-size: 11px;
+  color: #000;
+}
+
+/* ── Hidden ── */
+.hidden { display: none; }
+
+/* ── Separator line (groupbox style) ── */
+.win-separator {
+  border: none;
+  border-top: 1px solid var(--win-border-dk);
+  border-bottom: 1px solid var(--win-border-lt);
+  margin: 8px 0;
+}
+
+/* ── Dialog-style form container ── */
+#auth-card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* align Sign In button right */
+#login-form button[type="submit"] {
+  margin-top: 4px;
+  justify-self: end;
+}
+
+/* ── Taskbar-style footer hint ── */
+.taskbar-hint {
+  font-size: 10px;
+  color: #555;
+  border-top: 1px solid var(--win-border-dk);
+  padding-top: 4px;
+  margin-top: 8px;
 }
