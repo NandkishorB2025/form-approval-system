@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Approval System</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>Form Approval System</h1>
+        <p>Applicant • Scrutiny • Admin</p>
+      </header>
+
+      <section id="auth-card" class="card">
+        <h2>Login</h2>
+        <form id="login-form" class="form-grid">
+          <label>
+            Email
+            <input type="email" id="login-email" required />
+          </label>
+          <label>
+            Password
+            <input type="password" id="login-password" required />
+          </label>
+          <button type="submit">Sign In</button>
+        </form>
+        <p class="hint">
+          Create users in Supabase Auth and assign roles in
+          <code>public.profiles</code>.
+        </p>
+      </section>
+
+      <section id="app-shell" class="hidden">
+        <div class="card toolbar">
+          <div>
+            <strong id="user-email"></strong>
+            <span class="badge" id="user-role"></span>
+          </div>
+          <button id="logout-btn" class="secondary">Logout</button>
+        </div>
+
+        <section id="applicant-panel" class="card hidden">
+          <h2>Applicant Panel</h2>
+          <form id="submission-form" class="form-grid">
+            <label>
+              Name
+              <input type="text" id="applicant-name" required />
+            </label>
+            <label>
+              Email
+              <input type="email" id="applicant-email" required />
+            </label>
+            <label>
+              Feedback
+              <textarea id="applicant-feedback" rows="4" required></textarea>
+            </label>
+            <button type="submit">Submit Form</button>
+          </form>
+          <div id="applicant-message" class="message"></div>
+        </section>
+
+        <section id="scrutiny-panel" class="card hidden">
+          <h2>Scrutiny Panel</h2>
+          <p>Review pending submissions and approve/reject.</p>
+          <div id="scrutiny-list" class="list"></div>
+        </section>
+
+        <section id="admin-panel" class="card hidden">
+          <h2>Admin Reports</h2>
+          <div class="stats-grid">
+            <div class="stat"><span>Total</span><strong id="stat-total">0</strong></div>
+            <div class="stat"><span>Pending</span><strong id="stat-pending">0</strong></div>
+            <div class="stat"><span>Approved</span><strong id="stat-approved">0</strong></div>
+            <div class="stat"><span>Rejected</span><strong id="stat-rejected">0</strong></div>
+          </div>
+          <canvas id="status-chart" height="120"></canvas>
+          <div id="admin-table" class="list"></div>
+        </section>
+      </section>
+
+      <section id="status-box" class="status"></section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

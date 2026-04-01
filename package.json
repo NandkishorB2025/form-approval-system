@@ -1,0 +1,11 @@
+{
+  "name": "form-approval-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full-stack form approval workflow using Supabase and vanilla JS",
+  "scripts": {
+    "dev": "npx serve public -l 3000",
+    "build": "mkdir -p dist && cp -R public/* dist/",
+    "start": "npx serve dist -l 3000"
+  }
+}
