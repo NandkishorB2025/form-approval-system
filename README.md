@@ -63,14 +63,22 @@ on conflict (id) do update set role = excluded.role;
 
 In demo mode, these usernames work directly. In Supabase mode, login is email/password by default; map custom usernames to emails in `USERNAME_EMAIL_MAP` in `public/app.js` if needed.
 
-## 2) Configure Environment in Frontend
+## 2) Configure Environment for Local and Production
 
-Open `public/app.js` and update:
+This project supports runtime config using `public/env.js` (loaded before `app.js`).
 
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
+For local setup:
 
-(For production, inject these at build/deploy time or generate `app.js` from env variables.)
+1. Copy `public/env.js.example` to `public/env.js`.
+2. Set values for:
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+   - `SUBMISSIONS_TABLE` (use `form_submissions` when using `supabase/schema.sql`)
+
+For production on Vercel/GitHub:
+
+- Add `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and (optionally) `SUBMISSIONS_TABLE` as environment variables in Vercel.
+- `npm run build` generates `public/env.js` from those variables via `scripts/generate-env.js`.
 
 ## 3) Run Locally
 
@@ -86,6 +94,26 @@ Open <http://localhost:3000>
 1. Push to your Git repo.
 2. Import project in Vercel.
 3. Deploy (uses static configuration in `vercel.json`).
+
+## 5) Optional: Run Supabase Migrations from GitHub Actions
+
+This repository includes `.github/workflows/supabase-migrate.yml` to run database migrations on push to `main`.
+
+Add these GitHub Actions secrets:
+
+- `SUPABASE_ACCESS_TOKEN`
+- `SUPABASE_PROJECT_REF`
+- `SUPABASE_DB_PASSWORD`
+
+Then add migration files using Supabase CLI (example):
+
+```bash
+supabase login
+supabase link --project-ref <your_project_ref>
+supabase migration new init_schema
+```
+
+Move `supabase/schema.sql` content into migration files, commit, and push.
 
 ## Notes
 

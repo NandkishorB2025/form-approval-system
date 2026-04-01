@@ -1,6 +1,7 @@
-const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-const SUBMISSIONS_TABLE = 'applications';
+const runtimeConfig = window.__APP_CONFIG__ || {};
+const SUPABASE_URL = runtimeConfig.SUPABASE_URL || 'https://YOUR_PROJECT_REF.supabase.co';
+const SUPABASE_ANON_KEY = runtimeConfig.SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
+const SUBMISSIONS_TABLE = runtimeConfig.SUBMISSIONS_TABLE || 'form_submissions';
 const DEMO_STORAGE_KEY = 'formApprovalSubmissions';
 
 const SUPABASE_CONFIGURED =
