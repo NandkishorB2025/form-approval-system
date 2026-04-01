@@ -37,9 +37,10 @@ This creates:
 
 - `profiles` table (maps users to roles)
 - `form_submissions` table (stores applicant data; default schema included in this repo)
+- optional `applications` table support (the frontend default points to `applications` for compatibility with existing setups)
 - role-aware RLS policies for applicant/scrutiny/admin access
 
-The frontend default table is `form_submissions` (`SUBMISSIONS_TABLE` in `public/app.js`).
+The frontend default table is `applications` (`SUBMISSIONS_TABLE` in `public/app.js`). If you ran `supabase/schema.sql` as-is, set this value back to `form_submissions`.
 
 ### Create users
 
