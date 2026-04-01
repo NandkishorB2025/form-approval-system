@@ -1,7 +1,7 @@
 const runtimeConfig = window.__APP_CONFIG__ || {};
 const SUPABASE_URL = runtimeConfig.SUPABASE_URL || 'https://YOUR_PROJECT_REF.supabase.co';
 const SUPABASE_ANON_KEY = runtimeConfig.SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
-const SUBMISSIONS_TABLE = runtimeConfig.SUBMISSIONS_TABLE || 'form_submissions';
+const SUBMISSIONS_TABLE = runtimeConfig.SUBMISSIONS_TABLE || 'applications';
 const DEMO_STORAGE_KEY = 'formApprovalSubmissions';
 
 const SUPABASE_CONFIGURED =
@@ -60,6 +60,15 @@ const ui = {
 
 let statusChart;
 let currentUser = null;
+const LEGACY_APPLICATIONS_TABLE = 'applications';
+
+function normalizeSubmission(row) {
+  return {
+    ...row,
+    status: row.status || 'pending',
+    created_at: row.created_at || new Date().toISOString()
+  };
+}
 
 function setStatus(text) {
   ui.status.textContent = text;
@@ -170,6 +179,7 @@ async function loadScrutinyList() {
   }
 
   ui.scrutinyList.innerHTML = data
+    .map(normalizeSubmission)
     .map(
       (row) => `
       <article class="item">
@@ -305,7 +315,8 @@ async function loadAdminReport() {
     return;
   }
 
-  const stats = data.reduce(
+  const normalized = data.map(normalizeSubmission);
+  const stats = normalized.reduce(
     (acc, item) => {
       acc.total += 1;
       acc[item.status] += 1;
@@ -321,8 +332,8 @@ async function loadAdminReport() {
 
   renderChart(stats);
 
-  ui.adminTable.innerHTML = data.length
-    ? data
+  ui.adminTable.innerHTML = normalized.length
+    ? normalized
         .map(
           (row) => `
       <article class="item">
@@ -515,7 +526,16 @@ ui.submissionForm.addEventListener('submit', async (event) => {
     return;
   }
 
-  const { error } = await client.from(SUBMISSIONS_TABLE).insert(payload);
+  const submissionPayload =
+    SUBMISSIONS_TABLE === LEGACY_APPLICATIONS_TABLE
+      ? {
+          id: crypto.randomUUID(),
+          applicant_username: currentUser.email,
+          ...payload
+        }
+      : payload;
+
+  const { error } = await client.from(SUBMISSIONS_TABLE).insert(submissionPayload);
 
   if (error) {
     ui.applicantMessage.textContent = `Submission failed for "${SUBMISSIONS_TABLE}": ${error.message}`;
