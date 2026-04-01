@@ -10,79 +10,114 @@
   </head>
   <body>
     <main class="container">
+
+      <!-- ══ Window Title Bar ══ -->
       <header>
-        <h1>Form Approval System</h1>
-        <p>Applicant • Scrutiny • Admin</p>
+        <h1>&#128196; Form Approval System</h1>
+        <p>Applicant &bull; Scrutiny &bull; Admin</p>
       </header>
 
+      <!-- ══ Login Dialog ══ -->
       <section id="auth-card" class="card">
-        <h2>Login</h2>
-        <form id="login-form" class="form-grid">
-          <label>
-            Email
-            <input type="email" id="login-email" required />
-          </label>
-          <label>
-            Password
-            <input type="password" id="login-password" required />
-          </label>
-          <button type="submit">Sign In</button>
-        </form>
-        <p class="hint">
-          Create users in Supabase Auth and assign roles in
-          <code>public.profiles</code>.
-        </p>
+        <div class="win-titlebar">
+          <span class="win-titlebar-icon">&#128274;</span>
+          Login
+        </div>
+        <div class="card-body">
+          <form id="login-form" class="form-grid">
+            <label>
+              Email
+              <input type="email" id="login-email" required />
+            </label>
+            <label>
+              Password
+              <input type="password" id="login-password" required />
+            </label>
+            <button type="submit">Sign In</button>
+          </form>
+          <p class="hint taskbar-hint">
+            Create users in Supabase Auth and assign roles in
+            <code>public.profiles</code>.
+          </p>
+        </div>
       </section>
 
+      <!-- ══ App Shell (post-login) ══ -->
       <section id="app-shell" class="hidden">
-        <div class="card toolbar">
+
+        <!-- Toolbar -->
+        <div class="toolbar card">
           <div>
             <strong id="user-email"></strong>
             <span class="badge" id="user-role"></span>
           </div>
-          <button id="logout-btn" class="secondary">Logout</button>
+          <button id="logout-btn" class="secondary">Log Off</button>
         </div>
 
+        <!-- Applicant Panel -->
         <section id="applicant-panel" class="card hidden">
-          <h2>Applicant Panel</h2>
-          <form id="submission-form" class="form-grid">
-            <label>
-              Name
-              <input type="text" id="applicant-name" required />
-            </label>
-            <label>
-              Email
-              <input type="email" id="applicant-email" required />
-            </label>
-            <label>
-              Feedback
-              <textarea id="applicant-feedback" rows="4" required></textarea>
-            </label>
-            <button type="submit">Submit Form</button>
-          </form>
-          <div id="applicant-message" class="message"></div>
-        </section>
-
-        <section id="scrutiny-panel" class="card hidden">
-          <h2>Scrutiny Panel</h2>
-          <p>Review pending submissions and approve/reject.</p>
-          <div id="scrutiny-list" class="list"></div>
-        </section>
-
-        <section id="admin-panel" class="card hidden">
-          <h2>Admin Reports</h2>
-          <div class="stats-grid">
-            <div class="stat"><span>Total</span><strong id="stat-total">0</strong></div>
-            <div class="stat"><span>Pending</span><strong id="stat-pending">0</strong></div>
-            <div class="stat"><span>Approved</span><strong id="stat-approved">0</strong></div>
-            <div class="stat"><span>Rejected</span><strong id="stat-rejected">0</strong></div>
+          <div class="win-titlebar">
+            <span class="win-titlebar-icon">&#128221;</span>
+            Applicant Panel
           </div>
-          <canvas id="status-chart" height="120"></canvas>
-          <div id="admin-table" class="list"></div>
+          <div class="card-body">
+            <form id="submission-form" class="form-grid">
+              <label>
+                Name
+                <input type="text" id="applicant-name" required />
+              </label>
+              <label>
+                Email
+                <input type="email" id="applicant-email" required />
+              </label>
+              <label>
+                Feedback
+                <textarea id="applicant-feedback" rows="4" required></textarea>
+              </label>
+              <button type="submit">Submit Form</button>
+            </form>
+            <div id="applicant-message" class="message"></div>
+          </div>
         </section>
+
+        <!-- Scrutiny Panel -->
+        <section id="scrutiny-panel" class="card hidden">
+          <div class="win-titlebar">
+            <span class="win-titlebar-icon">&#128269;</span>
+            Scrutiny Panel
+          </div>
+          <div class="card-body">
+            <p style="margin-bottom:8px;">Review pending submissions and approve or reject.</p>
+            <hr class="win-separator" />
+            <div id="scrutiny-list" class="list"></div>
+          </div>
+        </section>
+
+        <!-- Admin Panel -->
+        <section id="admin-panel" class="card hidden">
+          <div class="win-titlebar">
+            <span class="win-titlebar-icon">&#128202;</span>
+            Admin Reports
+          </div>
+          <div class="card-body">
+            <div class="stats-grid">
+              <div class="stat"><span>Total</span><strong id="stat-total">0</strong></div>
+              <div class="stat"><span>Pending</span><strong id="stat-pending">0</strong></div>
+              <div class="stat"><span>Approved</span><strong id="stat-approved">0</strong></div>
+              <div class="stat"><span>Rejected</span><strong id="stat-rejected">0</strong></div>
+            </div>
+            <hr class="win-separator" />
+            <canvas id="status-chart" height="120"></canvas>
+            <hr class="win-separator" />
+            <div id="admin-table" class="list"></div>
+          </div>
+        </section>
+
       </section>
 
-      <section id="status-box" class="status"></section>
+      <!-- ══ Status Bar ══ -->
+      <div id="status-box" class="status"></div>
+
     </main>
 
     <script src="./app.js"></script>
