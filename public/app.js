@@ -1,6 +1,6 @@
 const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
 const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-const SUBMISSIONS_TABLE = 'form_submissions';
+const SUBMISSIONS_TABLE = 'applications';
 const DEMO_STORAGE_KEY = 'formApprovalSubmissions';
 
 const SUPABASE_CONFIGURED =
