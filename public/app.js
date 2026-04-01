@@ -1,18 +1,22 @@
 const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
 const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
-if (SUPABASE_URL.includes('YOUR_PROJECT_REF') || SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY')) {
+const SUPABASE_CONFIGURED =
+  !SUPABASE_URL.includes('YOUR_PROJECT_REF') && !SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY');
+
+if (!SUPABASE_CONFIGURED) {
   document.getElementById('status-box').textContent =
-    'Update SUPABASE_URL and SUPABASE_ANON_KEY in public/app.js before using the app.';
+    'Supabase is not configured. Local demo login is enabled with Applicant/Scrutiny/Admin credentials.';
 }
 
-const DEFAULT_LOGIN_IDENTIFIERS = {
-  username1: 'username1@example.com',
-  username2: 'username2@example.com',
-  username3: 'username3@example.com'
+const DEMO_USERS = {
+  nandkishor2026: { role: 'applicant', password: 'Pass@123', email: 'Nandkishor2026' },
+  scrutiny2026: { role: 'scrutiny', password: 'Pass@123', email: 'Scrutiny2026' },
+  admin2026: { role: 'admin', password: 'Pass@123', email: 'Admin2026' },
+  foradmin2026: { role: 'admin', password: 'Pass@123', email: 'forAdmin2026' }
 };
 
-const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const client = SUPABASE_CONFIGURED ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 const ui = {
   authCard: document.getElementById('auth-card'),
@@ -24,6 +28,7 @@ const ui = {
   userEmail: document.getElementById('user-email'),
   userRole: document.getElementById('user-role'),
   status: document.getElementById('status-box'),
+  panelTabs: document.getElementById('panel-tabs'),
 
   applicantPanel: document.getElementById('applicant-panel'),
   submissionForm: document.getElementById('submission-form'),
@@ -45,24 +50,24 @@ const ui = {
 };
 
 let statusChart;
+let currentUser = null;
 
 function setStatus(text) {
   ui.status.textContent = text;
 }
 
-function resolveEmailIdentifier(identifier) {
-  const value = identifier.trim().toLowerCase();
-  return DEFAULT_LOGIN_IDENTIFIERS[value] ?? value;
-}
-
-function setVisiblePanel(role) {
+function setVisiblePanel(panelKey) {
   ui.applicantPanel.classList.add('hidden');
   ui.scrutinyPanel.classList.add('hidden');
   ui.adminPanel.classList.add('hidden');
 
-  if (role === 'applicant') ui.applicantPanel.classList.remove('hidden');
-  if (role === 'scrutiny') ui.scrutinyPanel.classList.remove('hidden');
-  if (role === 'admin') ui.adminPanel.classList.remove('hidden');
+  ui.panelTabs.querySelectorAll('button[data-panel]').forEach((button) => {
+    button.classList.toggle('active', button.dataset.panel === panelKey);
+  });
+
+  if (panelKey === 'applicant') ui.applicantPanel.classList.remove('hidden');
+  if (panelKey === 'scrutiny') ui.scrutinyPanel.classList.remove('hidden');
+  if (panelKey === 'admin') ui.adminPanel.classList.remove('hidden');
 }
 
 async function getProfileRole(userId) {
@@ -77,6 +82,11 @@ async function getProfileRole(userId) {
 }
 
 async function loadScrutinyList() {
+  if (!SUPABASE_CONFIGURED) {
+    ui.scrutinyList.innerHTML = '<div class="item">Demo mode: connect Supabase to load submissions.</div>';
+    return;
+  }
+
   const { data, error } = await client
     .from('form_submissions')
     .select('*')
@@ -114,6 +124,11 @@ async function loadScrutinyList() {
 }
 
 async function updateSubmissionStatus(id, status) {
+  if (!SUPABASE_CONFIGURED) {
+    setStatus('Demo mode: connect Supabase to update statuses.');
+    return;
+  }
+
   const { error } = await client
     .from('form_submissions')
     .update({ status })
@@ -152,6 +167,16 @@ function renderChart(stats) {
 }
 
 async function loadAdminReport() {
+  if (!SUPABASE_CONFIGURED) {
+    ui.statTotal.textContent = '0';
+    ui.statPending.textContent = '0';
+    ui.statApproved.textContent = '0';
+    ui.statRejected.textContent = '0';
+    ui.adminTable.innerHTML = '<div class="item">Demo mode: connect Supabase to view admin reports.</div>';
+    renderChart({ pending: 0, approved: 0, rejected: 0 });
+    return;
+  }
+
   const { data, error } = await client
     .from('form_submissions')
     .select('*')
@@ -195,14 +220,35 @@ async function loadAdminReport() {
     .join('');
 }
 
+function applySession(user) {
+  currentUser = user;
+
+  if (!user) {
+    ui.authCard.classList.remove('hidden');
+    ui.appShell.classList.add('hidden');
+    return;
+  }
+
+  ui.userEmail.textContent = user.email;
+  ui.userRole.textContent = user.role;
+  ui.authCard.classList.add('hidden');
+  ui.appShell.classList.remove('hidden');
+  setVisiblePanel(user.role);
+}
+
 async function boot() {
+  if (!SUPABASE_CONFIGURED) {
+    const demoSession = window.sessionStorage.getItem('demoSession');
+    applySession(demoSession ? JSON.parse(demoSession) : null);
+    return;
+  }
+
   const {
     data: { session }
   } = await client.auth.getSession();
 
   if (!session) {
-    ui.authCard.classList.remove('hidden');
-    ui.appShell.classList.add('hidden');
+    applySession(null);
     return;
   }
 
@@ -217,29 +263,34 @@ async function boot() {
     setStatus(`Role lookup failed: ${error.message}`);
   }
 
-  ui.userEmail.textContent = user.email;
-  ui.userRole.textContent = role;
-  ui.authCard.classList.add('hidden');
-  ui.appShell.classList.remove('hidden');
-
-  setVisiblePanel(role);
-
-  if (role === 'scrutiny') {
-    await loadScrutinyList();
-  }
-  if (role === 'admin') {
-    await loadAdminReport();
-  }
+  applySession({ email: user.email, role, id: user.id });
 }
 
 ui.loginForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   setStatus('Signing in...');
 
-  const email = resolveEmailIdentifier(ui.loginEmail.value);
+  const username = ui.loginEmail.value.trim().toLowerCase();
   const password = ui.loginPassword.value;
 
-  const { error } = await client.auth.signInWithPassword({ email, password });
+  if (!SUPABASE_CONFIGURED) {
+    const demoUser = DEMO_USERS[username];
+    if (!demoUser || demoUser.password !== password) {
+      setStatus('Login failed: Invalid credentials.');
+      return;
+    }
+
+    const session = { email: demoUser.email, role: demoUser.role };
+    window.sessionStorage.setItem('demoSession', JSON.stringify(session));
+    applySession(session);
+    setStatus('Logged in successfully.');
+
+    if (demoUser.role === 'scrutiny') await loadScrutinyList();
+    if (demoUser.role === 'admin') await loadAdminReport();
+    return;
+  }
+
+  const { error } = await client.auth.signInWithPassword({ email: username, password });
 
   if (error) {
     setStatus(`Login failed: ${error.message}`);
@@ -251,6 +302,13 @@ ui.loginForm.addEventListener('submit', async (event) => {
 });
 
 ui.logoutBtn.addEventListener('click', async () => {
+  if (!SUPABASE_CONFIGURED) {
+    window.sessionStorage.removeItem('demoSession');
+    setStatus('Logged out.');
+    applySession(null);
+    return;
+  }
+
   const { error } = await client.auth.signOut();
   if (error) {
     setStatus(`Logout failed: ${error.message}`);
@@ -261,6 +319,22 @@ ui.logoutBtn.addEventListener('click', async () => {
   await boot();
 });
 
+ui.panelTabs.addEventListener('click', async (event) => {
+  const button = event.target.closest('button[data-panel]');
+  if (!button || !currentUser) return;
+
+  const panel = button.dataset.panel;
+  setVisiblePanel(panel);
+
+  if (panel === 'scrutiny') {
+    await loadScrutinyList();
+  }
+
+  if (panel === 'admin') {
+    await loadAdminReport();
+  }
+});
+
 ui.submissionForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
@@ -269,6 +343,12 @@ ui.submissionForm.addEventListener('submit', async (event) => {
     email: ui.applicantEmail.value.trim(),
     feedback: ui.applicantFeedback.value.trim()
   };
+
+  if (!SUPABASE_CONFIGURED) {
+    ui.submissionForm.reset();
+    ui.applicantMessage.textContent = 'Demo mode: form captured locally only (Supabase not connected).';
+    return;
+  }
 
   const { error } = await client.from('form_submissions').insert(payload);
 
@@ -288,8 +368,10 @@ ui.scrutinyList.addEventListener('click', async (event) => {
   await updateSubmissionStatus(button.dataset.id, button.dataset.status);
 });
 
-client.auth.onAuthStateChange(async () => {
-  await boot();
-});
+if (SUPABASE_CONFIGURED) {
+  client.auth.onAuthStateChange(async () => {
+    await boot();
+  });
+}
 
 boot();
